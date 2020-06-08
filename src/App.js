@@ -1,26 +1,54 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from 'react';
+//import socketIOClient from 'socket.io-client';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import Board from './Components/BoardComponent';
+import Registrtion from './Components/RegistrationComponent';
+
+class App extends Component {
+
+	constructor(props) {
+		super(props);
+
+		this.state = {
+			socketConnected: false,
+			serverConnected: false,
+			turn: false,
+			name: "Guest"
+		}
+
+		/*const ENDPOINT = "http://127.0.0.1:4001";
+		const socket = socketIOClient(ENDPOINT);
+
+		socket.on("connect", ()=>this.setState({serverConnected: true}));
+		socket.on("toggle-turn", ()=>this.setState({turn: !this.state.turn}));
+		*/
+	}
+
+	registerationSubmit = na => {
+		this.setState({name: na})
+		this.setState({
+			serverConnected: true
+		})
+	}
+
+	render() {
+		return (
+			<div className="container">
+				<div className="row">
+					<Registrtion name={this.state.name} registerationSubmit={this.registerationSubmit} connected={this.state.serverConnected} />
+				</div>
+				<div className="row">
+					<div className="col-12 col-md-8">
+						<Board turn={this.state.turn} />
+					</div>
+					<div className="col-12 col-md-4">
+						<h4>Status</h4>
+						<p>Server: {(this.state.socketConnected) ? "Connected":"Disconnected"}</p>
+					</div>
+				</div>
+			</div>
+		);
+	}
 }
 
 export default App;
