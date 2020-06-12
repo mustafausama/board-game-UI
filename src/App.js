@@ -17,18 +17,24 @@ class App extends Component {
 		}
 
 		/*const ENDPOINT = "http://127.0.0.1:4001";
+		
 		const socket = socketIOClient(ENDPOINT);
 
 		socket.on("connect", ()=>this.setState({serverConnected: true}));
-		socket.on("toggle-turn", ()=>this.setState({turn: !this.state.turn}));
-		*/
+		socket.on("toggle-turn", ()=>this.setState({turn: !this.state.turn}));*/
+
 	}
 
 	registerationSubmit = na => {
 		this.setState({name: na})
+		/* temp until we implement websocket */
 		this.setState({
 			serverConnected: true
-		})
+		});
+		/* End temp */
+		/*socket.emit('register', {name: na}, (res) => {
+			if(res) this.setState({ serverConnected: true });
+		});*/
 	}
 
 	render() {
