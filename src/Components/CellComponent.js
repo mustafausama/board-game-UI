@@ -4,8 +4,13 @@ class Cell extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			styles : {
-				backgroundColor: 'white'
+			dStyles : { // Dynamic Style
+				backgroundColor: 'white',
+			},
+			fStyle: { // Fixed Style
+				width: this.props.size+'em',
+				height: this.props.size+'em',
+				border: '5px solid #ddd'
 			},
 			selected: false
 		};
@@ -13,7 +18,7 @@ class Cell extends React.Component {
 
 	cellOnClick = (style) => {
 		console.log(style);
-		this.setState({styles : {backgroundColor: !this.state.selected ? 'black' : 'white'}, selected: !this.state.selected});
+		this.setState({dStyles : {backgroundColor: !this.state.selected ? 'black' : 'white'}, selected: !this.state.selected});
 	}
 
 	renderCellContent() {
@@ -21,7 +26,7 @@ class Cell extends React.Component {
 	}
 
 	render() {
-		return <td style={this.state.styles} onClick={(e) => this.cellOnClick(e)}>{this.renderCellContent()}</td>;
+		return <td style={{...this.state.dStyles,...this.state.fStyle}} onClick={(e) => this.cellOnClick(e)}>{this.renderCellContent()}</td>;
 	}
 
 }

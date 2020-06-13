@@ -1,6 +1,5 @@
 import React from 'react';
 import Cell from './CellComponent';
-import { Table } from 'reactstrap';
 
 class Board extends React.Component {
 	constructor() {
@@ -12,19 +11,20 @@ class Board extends React.Component {
 	}
 
 	renderBoardCells() {
+		const size = 5;
 		const rows = [];
 		for(var i = 1; i <= this.state.rows; i++) {
 			const cells = [];
 			for(var j = 1; j <= this.state.cols; j++) {
-				cells.push(<Cell key={i+"_"+j}/>);
+				cells.push(<Cell size={size} key={i+"_"+j}/>);
 			}
 			rows.push(<tr>{cells}</tr>);
 		}
-		return <Table bordered>{rows}</Table>;
+		return <table>{rows}</table>;
 	}
 
 	render() {
-		return this.renderBoardCells();
+		return <div className="justify-content-center">{this.renderBoardCells()}</div>;
 	}
 
 }
