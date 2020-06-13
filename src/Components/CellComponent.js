@@ -13,7 +13,7 @@ class Cell extends React.Component {
 
 	cellOnClick = (style) => {
 		console.log(style);
-		this.setState({styles : {backgroundColor: this.state.selected ? 'black' : 'white'}, selected: !this.state.selected});
+		this.setState({styles : {backgroundColor: !this.state.selected ? 'black' : 'white'}, selected: !this.state.selected});
 	}
 
 	renderCellContent() {

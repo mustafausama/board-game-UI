@@ -12,12 +12,11 @@ class Board extends React.Component {
 	}
 
 	renderBoardCells() {
-		var c = 1;
 		const rows = [];
 		for(var i = 1; i <= this.state.rows; i++) {
 			const cells = [];
 			for(var j = 1; j <= this.state.cols; j++) {
-				cells.push(<Cell key={c++}/>);
+				cells.push(<Cell key={i+"_"+j}/>);
 			}
 			rows.push(<tr>{cells}</tr>);
 		}
