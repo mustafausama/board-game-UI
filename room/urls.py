@@ -16,6 +16,8 @@ list_create = {
 urlpatterns = [
     path('player', PlayerViewSet.as_view(list_create)),
     path('player/<int:pk>', PlayerViewSet.as_view(crud)),
+    path('room', RoomViewSet.as_view(list_create)),
+    path('room/<int:pk>', RoomViewSet.as_view(crud)),
     path('chess/game', ChessViewSet.as_view(list_create)),
     path('chess/game/<int:pk>', ChessViewSet.as_view(crud)),
     path('chess/item', ChessItemsViewSet.as_view({'get': 'list'})),

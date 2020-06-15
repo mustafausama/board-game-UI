@@ -90,12 +90,20 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
+            name='Room',
+            fields=[
+                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(db_index=True, max_length=32, verbose_name='name')),
+            ],
+        ),
+        migrations.CreateModel(
             name='Player',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('nickname', models.CharField(db_index=True, max_length=32, verbose_name='nickname')),
                 ('is_host', models.BooleanField(db_index=True, default=False, verbose_name='is_host')),
                 ('is_spectator', models.BooleanField(db_index=True, default=False, verbose_name='is_spectator')),
+                ('room', models.ForeignKey(default=None, on_delete=django.db.models.deletion.DO_NOTHING, related_name='player', to='room.Room')),
             ],
         ),
         migrations.CreateModel(

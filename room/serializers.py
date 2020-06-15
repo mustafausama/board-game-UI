@@ -98,3 +98,9 @@ class PawnSerializer(serializers.ModelSerializer):
     class Meta:
         model = Pawn
         fields = '__all__'
+
+
+class RoomSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Room
+        fields = '__all__'

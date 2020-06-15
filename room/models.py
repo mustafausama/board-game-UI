@@ -120,6 +120,16 @@ class CatanItem(Item):
     #     abstract = True
 
 
+class Player(models.Model):
+    nickname = models.CharField(verbose_name='nickname', db_index=True, max_length=32)
+    is_host = models.BooleanField(verbose_name='is_host', db_index=True, default=False)
+
+    # TODO: change to the true by default when will be supported
+    is_spectator = models.BooleanField(verbose_name='is_spectator', db_index=True, default=False)
+
+    room = models.ForeignKey("Room", on_delete=models.DO_NOTHING, related_name='player')
+
+
 class Game(models.Model):
     max_players = models.IntegerField(verbose_name='max_players')
     game_name = models.CharField(verbose_name='game_name', db_index=True, max_length=32)
@@ -139,9 +149,5 @@ class Catan(Game):
     max_players = models.IntegerField(verbose_name='max_players', default=4)
 
 
-class Player(models.Model):
-    nickname = models.CharField(verbose_name='nickname', db_index=True, max_length=32)
-    is_host = models.BooleanField(verbose_name='is_host', db_index=True, default=False)
-
-    # TODO: change to the true by default when will be supported
-    is_spectator = models.BooleanField(verbose_name='is_spectator', db_index=True, default=False)
+class Room(models.Model):
+    name = models.CharField(verbose_name='name', db_index=True, max_length=32)

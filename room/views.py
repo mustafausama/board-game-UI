@@ -73,3 +73,8 @@ class PawnViewSet(viewsets.ModelViewSet):
     queryset = Pawn.objects.all()
 
 
+class RoomViewSet(viewsets.ModelViewSet):
+    serializer_class = RoomSerializer
+    queryset = Room.objects.all()
+
+
