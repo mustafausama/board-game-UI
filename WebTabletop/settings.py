@@ -79,16 +79,16 @@ WSGI_APPLICATION = 'WebTabletop.wsgi.application'
 
 DATABASES = {
     'default': {
-        # 'ENGINE': 'django.db.backends.sqlite3',
-        # 'NAME': 'mydatabase',
-        'ENGINE': 'djongo',
-        'NAME': 'webtabletopdb',
-        'CLIENT': {
-            'host': 'mongodb+srv://webtabletopcluster-aumyj.mongodb.net/webtabletopdb',
-            'username': 'admin',
-            'password': '8qg4s7xr',
-        },
-        'ENFORCE_SCHEMA': False,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': 'db.sqlite3',
+        # 'ENGINE': 'djongo',
+        # 'NAME': 'webtabletopdb',
+        # 'CLIENT': {
+        #     'host': 'mongodb+srv://webtabletopcluster-aumyj.mongodb.net/webtabletopdb',
+        #     'username': 'admin',
+        #     'password': '8qg4s7xr',
+        # },
+        # 'ENFORCE_SCHEMA': False,
     }
 }
 
@@ -130,3 +130,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = 'media'

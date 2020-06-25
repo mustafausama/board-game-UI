@@ -43,36 +43,6 @@ class ChessItemsViewSet(viewsets.ModelViewSet):
     queryset = ChessItem.objects.all()
 
 
-class QueenViewSet(viewsets.ModelViewSet):
-    serializer_class = QueenSerializer
-    queryset = Queen.objects.all()
-
-
-class KingViewSet(viewsets.ModelViewSet):
-    serializer_class = KingSerializer
-    queryset = King.objects.all()
-
-
-class BishopViewSet(viewsets.ModelViewSet):
-    serializer_class = BishopSerializer
-    queryset = Bishop.objects.all()
-
-
-class KnightViewSet(viewsets.ModelViewSet):
-    serializer_class = KnightSerializer
-    queryset = Knight.objects.all()
-
-
-class RookViewSet(viewsets.ModelViewSet):
-    serializer_class = RookSerializer
-    queryset = Rook.objects.all()
-
-
-class PawnViewSet(viewsets.ModelViewSet):
-    serializer_class = PawnSerializer
-    queryset = Pawn.objects.all()
-
-
 class RoomViewSet(viewsets.ModelViewSet):
     serializer_class = RoomSerializer
     queryset = Room.objects.all()

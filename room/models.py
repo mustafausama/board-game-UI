@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import F
+import json
 
 
 class Grid(models.Model):
@@ -7,11 +9,11 @@ class Grid(models.Model):
 
 
 class ChessGrid(Grid):
-    pass
+    game = models.OneToOneField('Chess', models.CASCADE, related_name='chess_grid')
 
 
 class CatanGrid(Grid):
-    pass
+    game = models.OneToOneField('Catan', models.CASCADE, related_name='catan_grid')
 
 
 class Cell(models.Model):
@@ -41,80 +43,87 @@ class CatanCell(Cell):
 
 class Item(models.Model):
     cell = models.ForeignKey("Cell", on_delete=models.CASCADE, related_name='item')
+    type = models.CharField(max_length=64, verbose_name='type', db_index=True)
+    image = models.ImageField(upload_to='uploads/')
 
     class Meta:
         abstract = True
 
 
 class ChessItem(Item):
-    cell = models.ForeignKey("ChessCell", on_delete=models.CASCADE, related_name='figure')
+    """
+    Possible types:
+    King
+    Queen
+    Bishop
+    Knight
+    Rook
+    """
+    cell = models.ForeignKey("ChessCell", on_delete=models.CASCADE, related_name='chess_item')
     isWhite = models.BooleanField(verbose_name='isWhite', db_index=True)
+    image = models.ImageField(upload_to='uploads/chess/%d/%m/%Y', blank=True, null=True)
 
     def can_move(self, cell):
-        pass
+        return True
+        if self.type == 'King':
+            return (cell.chess_item.count() == 0 or
+                    cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
+                   self.cell != cell and \
+                   abs(cell.x - self.cell.x) < 2 and \
+                   abs(cell.y - self.cell.y) < 2
+
+        if self.type == 'Queen':
+            return (cell.chess_item.count() == 0 or
+                    cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
+                   self.cell != cell and \
+                   (abs(cell.x - self.cell.x) == abs(cell.y - self.cell.y) or
+                    abs(cell.x - self.cell.x) == 0 or
+                    abs(cell.y - self.cell.y) == 0)
+
+        if self.type == 'Bishop':
+            return (cell.chess_item.count() == 0 or
+                    cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
+                   self.cell != cell and \
+                   abs(cell.x - self.cell.x) == abs(cell.y - self.cell.y)
+
+        if self.type == 'Knight':
+            return (cell.chess_item.count() == 0 or
+                    cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
+                   (abs(cell.x - self.cell.x) == 1 and abs(cell.y - self.cell.y) == 2) or \
+                   (abs(cell.x - self.cell.x) == 2 and abs(cell.y - self.cell.y) == 1)
+
+        if self.type == 'Rook':
+            return (cell.chess_item.count() == 0 or
+                    cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
+                   self.cell != cell and \
+                   (abs(cell.x - self.cell.x) == 0 or
+                    abs(cell.y - self.cell.y) == 0)
+
+        if self.type == 'Pawn':
+            return ((cell.chess_item.count() == 0 and cell.x == self.cell.x) or
+                    (cell.chess_item.only('isWhite')[0].isWhite != self.isWhite and cell.x - self.cell.x == 1)
+                    ) and \
+                   cell.y - self.cell.y == 1 if self.isWhite else -1
 
     def move(self, cell):
-        cell.item.delete()
-        cell.item = self
+        cell.chess_item.delete()
+        cell.chess_item = self
         cell.save()
 
-    # class Meta:
-    #     abstract = True
+    def available_cells(self):
+        return ChessCell.objects.filter(id__in=[x.id for x in ChessCell.objects.all().filter(grid=self.cell.grid) if self.can_move(x)])
+        # return ChessCell.objects.all().filter(grid=self.cell.grid).filter(self.can_move('entry'))
 
+    def can_transform(self):
+        pass
 
-class King(ChessItem):  # король in russian
-    def can_move(self, cell):
-        return self.cell != cell and \
-               abs(cell.x - self.cell.x) < 2 and \
-               abs(cell.y - self.cell.y) < 2 and \
-               (cell.item.objects.count == 0 or
-                cell.item.isWhite != self.isWhite)
-
-
-class Queen(ChessItem):  # ферзь in russian
-    def can_move(self, cell):
-        return self.cell != cell and \
-               (abs(cell.x - self.cell.x) == abs(cell.y - self.cell.y) or
-                abs(cell.x - self.cell.x) == 0 or
-                abs(cell.y - self.cell.y) == 0)
-
-
-class Bishop(ChessItem):  # elephant in russian version
-    def can_move(self, cell):
-        return self.cell != cell and \
-               abs(cell.x - self.cell.x) == abs(cell.y - self.cell.y)
-
-
-class Knight(ChessItem):  # horse in russian version
-    def can_move(self, cell):
-        return self.cell != cell
-
-
-class Rook(ChessItem):  # ладья in russian
-    def can_move(self, cell):
-        return self.cell != cell and \
-               (abs(cell.x - self.cell.x) == 0 or
-                abs(cell.y - self.cell.y) == 0)
-
-
-class Pawn(ChessItem):  # пешка in russian
-    def can_move(self, cell):
-        # TODO: Check in GUI if we should swap 1 and -1
-        return self.cell != cell and \
-               cell.y - self.cell.y == 1 if self.isWhite else -1 and \
-               (cell.x == self.cell.x or
-                (cell.item.isWhite != self.isWhite and abs(cell.x - self.cell.x) == 1)
-                )
-
-    # def can_transform(self):
-    #     pass
-    #
-    # def transform(self):
-    #     pass
+    def transform(self):
+        pass
 
 
 class CatanItem(Item):
-    cell = models.ForeignKey("CatanCell", on_delete=models.CASCADE, related_name='item')
+    cell = models.ForeignKey("CatanCell", on_delete=models.CASCADE, related_name='catan_item')
+    image = models.ImageField(upload_to='uploads/catan/', blank=True, null=True)
 
     # class Meta:
     #     abstract = True
@@ -123,16 +132,14 @@ class CatanItem(Item):
 class Player(models.Model):
     nickname = models.CharField(verbose_name='nickname', db_index=True, max_length=32)
     is_host = models.BooleanField(verbose_name='is_host', db_index=True, default=False)
-
-    # TODO: change to the true by default when will be supported
-    is_spectator = models.BooleanField(verbose_name='is_spectator', db_index=True, default=False)
-
     room = models.ForeignKey("Room", on_delete=models.DO_NOTHING, related_name='player')
+    # is_spectator = models.BooleanField(verbose_name='is_spectator', db_index=True, default=False)
 
 
 class Game(models.Model):
     max_players = models.IntegerField(verbose_name='max_players')
     game_name = models.CharField(verbose_name='game_name', db_index=True, max_length=32)
+    room = models.OneToOneField('Room', on_delete=models.CASCADE, related_name='game')
 
     def have_places(self):
         return self.max_players - Player.objects.count() > 0
@@ -143,10 +150,14 @@ class Game(models.Model):
 
 class Chess(Game):
     max_players = models.IntegerField(verbose_name='max_players', default=2)
+    game_name = models.CharField(verbose_name='game_name', db_index=True, max_length=32, default='Chess')
+    room = models.OneToOneField('Room', on_delete=models.CASCADE, related_name='chess_game')
 
 
 class Catan(Game):
     max_players = models.IntegerField(verbose_name='max_players', default=4)
+    game_name = models.CharField(verbose_name='game_name', db_index=True, max_length=32, default='Catan')
+    room = models.OneToOneField('Room', on_delete=models.CASCADE, related_name='catan_game')
 
 
 class Room(models.Model):
