@@ -13,7 +13,8 @@ class App extends Component {
 			socketConnected: false,
 			serverConnected: false,
 			turn: false,
-			name: "Guest"
+			name: "Guest",
+			room: "default"
 		}
 
 		/*const ENDPOINT = "http://127.0.0.1:4001";
@@ -25,8 +26,8 @@ class App extends Component {
 
 	}
 
-	registerationSubmit = na => {
-		this.setState({name: na})
+	registerationSubmit = (na, ro) => {
+		this.setState({name: na, room:ro})
 		/* temp until we implement websocket */
 		this.setState({
 			serverConnected: true
@@ -41,7 +42,7 @@ class App extends Component {
 		return (
 			<div className="container">
 				<div className="row">
-					<Registrtion name={this.state.name} registerationSubmit={this.registerationSubmit} connected={this.state.serverConnected} />
+					<Registrtion name={this.state.name} room={this.state.room} registerationSubmit={this.registerationSubmit} connected={this.state.serverConnected} />
 				</div>
 				<div className="row">
 					<div className="col-12 col-md-8">
