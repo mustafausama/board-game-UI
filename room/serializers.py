@@ -29,7 +29,8 @@ class ChessCellSerializer(serializers.ModelSerializer):
 class ChessGridSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChessGrid
-        fields = '__all__'
+        fields = ['game', 'cells_type', 'size_x', 'size_y']
+        read_only_fields = ['cells_type', 'size_x', 'size_y']
 
 
 class PlayerSerializer(serializers.ModelSerializer):
@@ -56,8 +57,8 @@ class GameSerializer(serializers.ModelSerializer):
 class ChessSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chess
-        fields = '__all__'
-        read_only_fields = ['max_players']
+        fields = ['id', 'max_players', 'game_name', 'room', 'chess_grid']
+        read_only_fields = ['max_players', 'chess_grid']
 
 
 class ChessItemCoordinatesField(serializers.Field):
@@ -97,40 +98,6 @@ class ChessItemsSerializer(serializers.ModelSerializer):
         fields = ['id', 'type', 'coordinates', 'isWhite', 'image', 'available_cells']
         read_only_fields = ['available_cells']
 
-#
-# class QueenSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Queen
-#         fields = '__all__'
-#
-#
-# class KingSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = King
-#         fields = '__all__'
-#
-#
-# class BishopSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Bishop
-#         fields = '__all__'
-#
-#
-# class KnightSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Knight
-#         fields = '__all__'
-#
-#
-# class RookSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Rook
-#         fields = '__all__'
-# class PawnSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Pawn
-#         fields = '__all__'
-
 
 class RoomSerializer(serializers.ModelSerializer):
     players = serializers.SerializerMethodField('player')
@@ -143,5 +110,5 @@ class RoomSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Room
-        fields = '__all__'
+        fields = ['id', 'name', 'players', 'chess_game', 'catan_game']
         read_only_fields = ['players']

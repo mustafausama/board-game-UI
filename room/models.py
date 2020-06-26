@@ -4,16 +4,25 @@ import json
 
 
 class Grid(models.Model):
+    game = models.OneToOneField('Game', models.CASCADE, related_name='grid')
+    cells_type = models.CharField(max_length=16, verbose_name='cells_type', db_index=True)
+    size_x = models.IntegerField(verbose_name='size_x', db_index=True)
+    size_y = models.IntegerField(verbose_name='size_y', db_index=True)
+
     class Meta:
         abstract = True
 
 
 class ChessGrid(Grid):
     game = models.OneToOneField('Chess', models.CASCADE, related_name='chess_grid')
+    cells_type = models.CharField(max_length=16, verbose_name='cells_type', db_index=True, default='tetragonal', blank=True)
+    size_x = models.IntegerField(verbose_name='size_x', db_index=True, default=8, blank=True)
+    size_y = models.IntegerField(verbose_name='size_y', db_index=True, default=8, blank=True)
 
 
 class CatanGrid(Grid):
     game = models.OneToOneField('Catan', models.CASCADE, related_name='catan_grid')
+    cells_type = models.CharField(max_length=16, verbose_name='cells_type', db_index=True, default='hexagonal', blank=True)
 
 
 class Cell(models.Model):
@@ -124,9 +133,6 @@ class ChessItem(Item):
 class CatanItem(Item):
     cell = models.ForeignKey("CatanCell", on_delete=models.CASCADE, related_name='catan_item')
     image = models.ImageField(upload_to='uploads/catan/', blank=True, null=True)
-
-    # class Meta:
-    #     abstract = True
 
 
 class Player(models.Model):
