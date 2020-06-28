@@ -148,18 +148,29 @@ class Board extends React.Component {
 			const possibleCells = old.available_cells;
 
 
-			//if turen isvalid, make it
+			//if move is valid, make it and patch serversde info
 			if(g[r][c].available){
 
-				var buf = g[r][c];
+				//swap cells content
+				var other = g[r][c];
 				g[r][c] = old;
-				g[y][x] = buf;
+				g[y][x] = other;
 
+				//update db via PATCH request
+				const body = {coordinates:{x:c+1,y:r+1}};
+
+				console.log(JSON.stringify(body));
+				console.log(body);
+
+				fetch('/api/chess/item/'+old.id,{
+					method: 'PATCH',
+					body: JSON.stringify(body),
+					headers: {
+		            'Content-Type': 'application/json'
+		        	}
+				})
 			}
 
-
-			//clear selection and update grid
-			
 
 			//unhighlight everythng
 			for(var i=0; i<this.state.rows; i++){
@@ -169,21 +180,17 @@ class Board extends React.Component {
 				}
 			}
 
-
+			//clear selection and update grid
 			this.setState({grid:g, cellSelected: false});
 		}
 	}
 
 
-	//PUT any changes made to the server
-	putUpdate(){
-		//TODO
-	}
 
 	render() {
 		return (<div>
 					<button value='update' onClick={() => this.getItemList()}>update</button>
-					<button value='update' onClick={() => this.putUpdate()}>save</button>
+					
 			   		<div className="justify-content-center">{this.renderBoardCells()}</div>
 			   </div>);
 	}
