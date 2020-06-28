@@ -48,13 +48,16 @@ class App extends Component {
 					<div className="col-12 col-md-8">
 						<Board turn={this.state.turn} />
 					</div>
-					<div className="col-12 col-md-4">
-						<h4>Status</h4>
-						<p>Server: {(this.state.socketConnected) ? "Connected":"Disconnected"}</p>
-					</div>
+					
 				</div>
 			</div>
 		);
+
+
+		//<div className="col-12 col-md-4">
+		//				<h4>Status</h4>
+		//				<p>Server: {(this.state.socketConnected) ? "Connected":"Disconnected"}</p>
+		//</div>
 	}
 }
 

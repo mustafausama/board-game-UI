@@ -14,8 +14,13 @@ class Board extends React.Component {
 	    for(var i=0; i<size; i++){
 	      g[i] = Array(size);
 	      for(var j=0; j<size; j++){
-	        g[i][j] = {selected : false,
-	                   value : 'empty'};
+	        g[i][j] = { selected : false,
+	        			available : false,
+	                    value : 'empty',
+	                	id: null,
+	                	img: '',
+	                	available_cells:[],
+	                };
 	      }
 	    }
 
@@ -29,40 +34,52 @@ class Board extends React.Component {
 		};
 	}
 
-	resetGrid(size){
-	    const g = Array(size);
+	emptyGrid(){
+
+		const height = this.state.rows;
+		const width = this.state.cols;
+
+	    const g = Array(height);
 	    
 
 	    //fill in the grid 
-	    for(var i=0; i<size; i++){
-	      g[i] = Array(size);
-	      for(var j=0; j<size; j++){
-	        g[i][j] = {selected : false,
-	                   value : 'empty'};
+	    for(var i=0; i<height; i++){
+	      g[i] = Array(width);
+	      for(var j=0; j<width; j++){
+	        g[i][j] = { selected : false,
+	        			available : false,
+	                    value : 'empty',
+	                	id: null,
+	                	img: '',
+	                	available_cells:[],
+	                };
 	      }
 	    }
 
-	    this.setState({grid:g});
+	    return g;
 	}
 
 
 	//update grid to represent items list
 	//vald coords assumed
 	updateGrid(){
-	    const g = this.state.grid;
+
+	    const g = this.emptyGrid();
 	    const items = this.state.itemList;
 	    
 	    for(var i=0; i<items.length; i++){
 	    	var id = items[i].id;
 	    	var figure = items[i].type;
 	    	//var color = items[i].isWhite;
-	    	var col = items[i].x - 1;
-	    	var row = items[i].y - 1;
+	    	var col = items[i].coordinates.x - 1;
+	    	var row = items[i].coordinates.y - 1;
 	    	var imageURL = items[i].image;
+	    	var available_cells = items[i].available_cells;
 
 	    	g[row][col].id = id;
 	    	g[row][col].value = figure;
 	    	g[row][col].img = imageURL;
+	    	g[row][col].available_cells = available_cells;
 	    }
 
 	    this.setState({grid:g});
@@ -79,11 +96,12 @@ class Board extends React.Component {
 	renderBoardCells() {
 		const cellSize = 5;
 		const rows = [];
-		for(var i = 0; i < this.state.rows; i++) {
+		for(let i = 0; i < this.state.rows; i++) {
 			const cells = [];
-			for(var j = 0; j < this.state.cols; j++) {
+			for(let j = 0; j < this.state.cols; j++) {
 				cells.push(<Cell size={cellSize} key={i+"_"+j} 
 								selected={this.state.grid[i][j].selected}
+								highlighted={this.state.grid[i][j].available}
 								value={this.state.grid[i][j].value} 
 								image={this.state.grid[i][j].img}
 								onClick={() => this.clickHandle(i, j)}/>);
@@ -95,20 +113,77 @@ class Board extends React.Component {
 	}
 
 
-	clickHandle(x, y){
-		
+	clickHandle(r, c){
+		const g = this.state.grid;
+
+
+		//if some figure is selected
+		if(this.state.cellSelected === false){
+			g[r][c].selected = !g[r][c].selected;
+			
+			const possibleCells = g[r][c].available_cells;
+
+			//if there is something to highlight, mark it to be so
+			if(possibleCells !== undefined){
+				for(var i=0; i<possibleCells.length; i++){
+					var col = possibleCells[i].x - 1;
+		    		var row = possibleCells[i].y - 1;
+		    		g[row][col].available = true;
+				}
+			}
+
+			//update grid and save selected figure
+			this.setState({grid:g, cellSelected: {y:r, x:c}});
+
+		}else{
+			//get coords of preciously selected figure
+			const x = this.state.cellSelected.x;
+			const y = this.state.cellSelected.y;
+
+
+			//get old cell content
+			const old = g[y][x];
+
+			//save highlighted cells
+			const possibleCells = old.available_cells;
+
+
+			//if turen isvalid, make it
+			if(g[r][c].available){
+
+				var buf = g[r][c];
+				g[r][c] = old;
+				g[y][x] = buf;
+
+			}
+
+
+			//clear selection and update grid
+			
+
+			//unhighlight everythng
+			for(var i=0; i<this.state.rows; i++){
+				for(var j=0; j<this.state.cols; j++){
+					g[i][j].available = false;
+					g[i][j].selected = false;
+				}
+			}
+
+
+			this.setState({grid:g, cellSelected: false});
+		}
 	}
 
 
-	//POST any changes made to the server
-	postUpdate(){
+	//PUT any changes made to the server
+	putUpdate(){
 		//TODO
 	}
 
 	render() {
 		return (<div>
 					<button value='update' onClick={() => this.getItemList()}>update</button>
-					<button value='update' onClick={() => this.postUpdate()}>post</button>
+					<button value='update' onClick={() => this.putUpdate()}>save</button>
 			   		<div className="justify-content-center">{this.renderBoardCells()}</div>
 			   </div>);
 	}

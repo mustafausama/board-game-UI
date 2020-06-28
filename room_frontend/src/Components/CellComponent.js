@@ -26,8 +26,8 @@ class Cell extends React.Component {
 	}
 
 	render() {
-
-		return <td style={{backgroundColor:this.state.selected ? 'black' : 'white',...this.state.fStyle}} onClick={this.props.onClick}>{this.renderCellContent()}</td>;
+		const bColor = this.props.selected ? 'black' : (this.props.highlighted ? 'green' :'white');
+		return <td style={{backgroundColor:bColor,...this.state.fStyle}} onClick={this.props.onClick}>{this.renderCellContent()}</td>;
 	}
 
 }
