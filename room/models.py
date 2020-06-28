@@ -15,14 +15,16 @@ class Grid(models.Model):
 
 class ChessGrid(Grid):
     game = models.OneToOneField('Chess', models.CASCADE, related_name='chess_grid')
-    cells_type = models.CharField(max_length=16, verbose_name='cells_type', db_index=True, default='tetragonal', blank=True)
+    cells_type = models.CharField(max_length=16, verbose_name='cells_type', db_index=True, default='tetragonal',
+                                  blank=True)
     size_x = models.IntegerField(verbose_name='size_x', db_index=True, default=8, blank=True)
     size_y = models.IntegerField(verbose_name='size_y', db_index=True, default=8, blank=True)
 
 
 class CatanGrid(Grid):
     game = models.OneToOneField('Catan', models.CASCADE, related_name='catan_grid')
-    cells_type = models.CharField(max_length=16, verbose_name='cells_type', db_index=True, default='hexagonal', blank=True)
+    cells_type = models.CharField(max_length=16, verbose_name='cells_type', db_index=True, default='hexagonal',
+                                  blank=True)
 
 
 class Cell(models.Model):
@@ -73,7 +75,6 @@ class ChessItem(Item):
     image = models.ImageField(upload_to='uploads/chess/%d/%m/%Y', blank=True, null=True)
 
     def can_move(self, cell):
-        return True
         if self.type == 'King':
             return (cell.chess_item.count() == 0 or
                     cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
@@ -82,6 +83,7 @@ class ChessItem(Item):
                    abs(cell.y - self.cell.y) < 2
 
         if self.type == 'Queen':
+            return True
             return (cell.chess_item.count() == 0 or
                     cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
                    self.cell != cell and \
@@ -90,18 +92,21 @@ class ChessItem(Item):
                     abs(cell.y - self.cell.y) == 0)
 
         if self.type == 'Bishop':
+            return True
             return (cell.chess_item.count() == 0 or
                     cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
-                   self.cell != cell and \
+                   ChessCell.objects.filter(grid=cell.grid, x__range=(cell.x, self.cell.x), y__range=(cell.y, self.cell.y), x=F('y')).exclude(id=cell.id).exists() and \
                    abs(cell.x - self.cell.x) == abs(cell.y - self.cell.y)
 
         if self.type == 'Knight':
+            return True
             return (cell.chess_item.count() == 0 or
                     cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
                    (abs(cell.x - self.cell.x) == 1 and abs(cell.y - self.cell.y) == 2) or \
                    (abs(cell.x - self.cell.x) == 2 and abs(cell.y - self.cell.y) == 1)
 
         if self.type == 'Rook':
+            return True
             return (cell.chess_item.count() == 0 or
                     cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
                    self.cell != cell and \
@@ -109,10 +114,13 @@ class ChessItem(Item):
                     abs(cell.y - self.cell.y) == 0)
 
         if self.type == 'Pawn':
-            return ((cell.chess_item.count() == 0 and cell.x == self.cell.x) or
-                    (cell.chess_item.only('isWhite')[0].isWhite != self.isWhite and cell.x - self.cell.x == 1)
-                    ) and \
-                   cell.y - self.cell.y == 1 if self.isWhite else -1
+            right_dir = cell.y - self.cell.y == (1 if self.isWhite else -1)
+            if cell.chess_item.exists():
+                return cell.chess_item.only('isWhite')[0].isWhite != self.isWhite and \
+                       abs(cell.x - self.cell.x) == 1 and \
+                       right_dir
+            else:
+                return cell.x == self.cell.x and right_dir
 
     def move(self, cell):
         cell.chess_item.delete()
@@ -120,8 +128,9 @@ class ChessItem(Item):
         cell.save()
 
     def available_cells(self):
-        return ChessCell.objects.filter(id__in=[x.id for x in ChessCell.objects.all().filter(grid=self.cell.grid) if self.can_move(x)])
-        # return ChessCell.objects.all().filter(grid=self.cell.grid).filter(self.can_move('entry'))
+        return ChessCell.objects.filter(
+            id__in=[x.id for x in ChessCell.objects.all().filter(grid=self.cell.grid) if self.can_move(x)])
+        # return ChessCell.objects.filter(grid=self.cell.grid).filter(self.can_move(F()))
 
     def can_transform(self):
         pass

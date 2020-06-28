@@ -68,12 +68,12 @@ class ChessItemCoordinatesField(serializers.Field):
                 }
 
     def to_internal_value(self, data):
-        cell = self.parent.instance.cell
+        figure = self.parent.instance
         r = re.match(r'\D+(\d+)\D+(\d+)\D+', data)
-        cell.x, cell.y = r.group(1), r.group(2)
-        cell.save()
-        return {'cell.x': cell.x,
-                'cell.y': cell.y
+        figure.cell = ChessCell.objects.get(grid=figure.cell.grid, x=r.group(1), y=r.group(2))
+        figure.save()
+        return {'cell.x': figure.cell.x,
+                'cell.y': figure.cell.y
                 }
 
 
