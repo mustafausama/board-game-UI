@@ -92,10 +92,16 @@ class ChessItem(Item):
                     abs(cell.y - self.cell.y) == 0)
 
         if self.type == 'Bishop':
-            return True
             return (cell.chess_item.count() == 0 or
                     cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
-                   ChessCell.objects.filter(grid=cell.grid, x__range=(cell.x, self.cell.x), y__range=(cell.y, self.cell.y), x=F('y')).exclude(id=cell.id).exists() and \
+                   ChessCell.objects \
+                       .filter(grid=cell.grid,
+                               x__range=(cell.x, self.cell.x),
+                               y__range=(cell.y, self.cell.y),
+                               x=F('y')) \
+                       .exclude(id=cell.id)\
+                       .exclude(id=self.cell_id) \
+                       .exists() and \
                    abs(cell.x - self.cell.x) == abs(cell.y - self.cell.y)
 
         if self.type == 'Knight':

@@ -69,11 +69,15 @@ class ChessItemCoordinatesField(serializers.Field):
 
     def to_internal_value(self, data):
         figure = self.parent.instance
-        r = re.match(r'\D+(\d+)\D+(\d+)\D+', data)
-        figure.cell = ChessCell.objects.get(grid=figure.cell.grid, x=r.group(1), y=r.group(2))
+        # fails the POST (figure is none, so it has no cell)
+        if isinstance(data, dict):
+            figure.cell = ChessCell.objects.get(grid=figure.cell.grid, x=data['x'], y=data['y'])
+        else:
+            r = re.match(r'\D*(\d+)\D*(\d+)\D*', data)
+            figure.cell = ChessCell.objects.get(grid=figure.cell.grid, x=r.group(1), y=r.group(2))
         figure.save()
         return {'cell.x': figure.cell.x,
-                'cell.y': figure.cell.y
+                'cell.y': figure.cell.y,
                 }
 
 
@@ -96,7 +100,7 @@ class ChessItemsSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChessItem
         fields = ['id', 'type', 'coordinates', 'isWhite', 'image', 'available_cells']
-        read_only_fields = ['available_cells']
+        read_only_fields = ['id', 'available_cells', 'image', 'isWhite', 'type']
 
 
 class RoomSerializer(serializers.ModelSerializer):
