@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from .models import *
 import re
-from django.core.serializers import serialize
 
 
 class GridSerializer(serializers.ModelSerializer):
@@ -88,8 +87,8 @@ class ChessItemsSerializer(serializers.ModelSerializer):
     coordinates = ChessItemCoordinatesField(source='*')
 
     def get_available_cells(self, item):
-        return item.available_cells().values('x', 'y')
-        # return ChessCell.objects.all().values('x', 'y')
+        # TODO: Check why tf this method called 4 times in PATCH request
+        return item.available_cells()
 
     # def get_x(self, item):
     #     return item.cell.x

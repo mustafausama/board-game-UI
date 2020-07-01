@@ -8,7 +8,7 @@ class Command(BaseCommand):
         game = Chess.objects.create(room=room)
         grid = ChessGrid.objects.create(game=game)
 
-        xy = {1, 2, 3, 4, 5, 6, 7, 8}
+        xy = [1, 2, 3, 4, 5, 6, 7, 8]
         cells = [ChessCell(x=i, y=k, grid=grid) for k in xy for i in xy]
         ChessCell.objects.bulk_create(cells)
         cells = ChessCell.objects.filter(grid=grid)
