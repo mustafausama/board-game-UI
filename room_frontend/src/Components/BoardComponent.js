@@ -62,10 +62,10 @@ class Board extends React.Component {
 
 	//update grid to represent items list
 	//vald coords assumed
-	updateGrid(){
+	updateGrid(itemList){
 
 	    const g = this.emptyGrid();
-	    const items = this.state.itemList;
+	    const items = itemList;
 	    
 	    for(var i=0; i<items.length; i++){
 	    	var id = items[i].id;
@@ -82,14 +82,14 @@ class Board extends React.Component {
 	    	g[row][col].available_cells = available_cells;
 	    }
 
-	    this.setState({grid:g});
+	    this.setState({grid:g, itemList:itemList});
 	}
 
 	//make GET request, save result to state and update grid
 	getItemList(){
-		fetch('/api/chess/item').then(res => res.json()).then(data => this.setState({itemList:data}));
-		console.log(this.state.itemList);
-		this.updateGrid();
+		fetch('/api/chess/item').then(res => res.json()).then(data => this.updateGrid(data));
+		//console.log(this.state.itemList);
+		//this.updateGrid();
 	}
 
 
@@ -149,12 +149,20 @@ class Board extends React.Component {
 
 
 			//if move is valid, make it and patch serversde info
-			if(g[r][c].available){
+			if(g[r][c].available &&  !(y===r && x===c)){
 
 				//swap cells content
 				var other = g[r][c];
 				g[r][c] = old;
-				g[y][x] = other;
+
+				//clear source cell
+				g[y][x] = { selected : false,
+	        			available : false,
+	                    value : 'empty',
+	                	id: null,
+	                	img: '',
+	                	available_cells:[],
+	                };
 
 				//update db via PATCH request
 				const body = {coordinates:{x:c+1,y:r+1}};
@@ -162,13 +170,27 @@ class Board extends React.Component {
 				console.log(JSON.stringify(body));
 				console.log(body);
 
+
+				//PATCH position of moved piece
 				fetch('/api/chess/item/'+old.id,{
 					method: 'PATCH',
 					body: JSON.stringify(body),
 					headers: {
 		            'Content-Type': 'application/json'
 		        	}
-				})
+				});
+
+
+				//delete other piece
+				if(other.id !== null){
+					fetch('/api/chess/item/'+other.id,{
+						method: 'DELETE'
+					});
+				}
+
+
+				
+
 			}
 
 
@@ -181,7 +203,10 @@ class Board extends React.Component {
 			}
 
 			//clear selection and update grid
-			this.setState({grid:g, cellSelected: false});
+			this.setState({cellSelected: false});
+
+			//wait a second and update grid
+			setTimeout(() => this.getItemList(), 500);
 		}
 	}
 
