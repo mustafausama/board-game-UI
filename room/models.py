@@ -234,7 +234,7 @@ class ChessItem(Item):
 
         elif self.type == 'Pawn':
 
-            if self.isWhite:
+            if self.isWhite and y < 8:
                 if not cells.get(x=x, y=y + 1).chess_item.exists():
                     available.append({'x': x, 'y': y + 1})
 
@@ -252,7 +252,7 @@ class ChessItem(Item):
                     if not cells.get(x=x, y=y + 2).chess_item.exists() and \
                             not cells.get(x=x, y=y + 1).chess_item.exists():
                         available.append({'x': x, 'y': y + 2})
-            else:
+            elif (not self.isWhite) and y > 1:
                 if not cells.get(x=x, y=y - 1).chess_item.exists():
                     available.append({'x': x, 'y': y - 1})
 

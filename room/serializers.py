@@ -21,14 +21,14 @@ class CellSerializer(serializers.ModelSerializer):
 class ChessCellSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChessCell
-        fields = ['x', 'y', 'grid']
+        fields = ['id', 'x', 'y', 'grid']
         read_only_fields = ['stackable']
 
 
 class ChessGridSerializer(serializers.ModelSerializer):
     class Meta:
         model = ChessGrid
-        fields = ['game', 'cells_type', 'size_x', 'size_y']
+        fields = ['id', 'game', 'cells_type', 'size_x', 'size_y']
         read_only_fields = ['cells_type', 'size_x', 'size_y']
 
 
