@@ -1,68 +1,35 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
-
-## Available Scripts
-
-In the project directory, you can run:
-
-### `yarn start`
-
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+## WebTabletop
+This project is an open-source web platform for tabletop games and creating bots for them.  
+Developed by Innopolis University students during the 2020 summer internship
+### How to run backend
+1. Create a Python virtual environment:  
+    1. create by typing `virtualenv venv` in cmd
+    1. activate by typing  
+    On Windows: `.\venv\Scripts\activate`  
+    On macOS and Linux: `source venv/bin/activate`
+1. Install dependencies: `pip install -r requirements.txt`
+1. Type `python manage.py makemigrations` and `python manage.py migrate` to create a local database and migrate all changes there
+1. Type `python manage.py runserver` from the __board-game-UI__ directory
+1. Open `127.0.0.1:8000` or `localhost:8000` and use the backend API
+### How to run frontend
+1. open directory __room_frontend__, and type in cmd next lines:
+    1. `npm install` if it's first time
+    1. `npm start` to run the frontend. `localhost:3000`should be opened automatically
+### Database manipulations
+1. Type `python manage.py init_chess_game` in cmd to fill the db with one new chess game. Message with game id should be returned
+1. Type `python manage.py clear_db` in cmd to clear the database from all entities
+### What to improve in the project
+1. Implement the Chess completely by providing next features:
+    1. Castling
+    1. Promotion
+    1. En passant
+    1. Check
+    1. Checkmate
+    1. Draw
+1. Implement the Settlers of Catan. There are library 'catan', it will help you a lot by providing a logic part.
+1. Implement rooms system
+1. Implement spectators logic
+### First development team (the ones you should hate if you work on this project after us)
+1. Vyacheslav Vasilev, B17-SE-02 – Backend
+1. Evgeniy Trantsev, B18-SNE – Frontend
+1. Mustafa Abdelrahman, B19-05 – Frontend

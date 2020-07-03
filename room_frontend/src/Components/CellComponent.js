@@ -12,7 +12,7 @@ class Cell extends React.Component {
 				height: this.props.size+'em',
 				border: '5px solid #ddd'
 			},
-			selected: false
+			selected: this.props.selected
 		};
 	}
 
@@ -22,11 +22,12 @@ class Cell extends React.Component {
 	}
 
 	renderCellContent() {
-		return <span></span>;
+		return <img src={this.props.image} alt={this.props.value} style={this.state.fStyle}/>;
 	}
 
 	render() {
-		return <td style={{...this.state.dStyles,...this.state.fStyle}} onClick={(e) => this.cellOnClick(e)}>{this.renderCellContent()}</td>;
+		const bColor = this.props.selected ? 'black' : (this.props.highlighted ? 'green' :'white');
+		return <td style={{backgroundColor:bColor,...this.state.fStyle}} onClick={this.props.onClick}>{this.renderCellContent()}</td>;
 	}
 
 }

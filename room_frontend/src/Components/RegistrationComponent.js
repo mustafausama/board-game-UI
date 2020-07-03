@@ -5,7 +5,8 @@ class Registration extends React.Component {
     constructor() {
         super();
         this.state = {
-            name: ""
+            name: "",
+            room: ""
         };
     }
 
@@ -19,8 +20,11 @@ class Registration extends React.Component {
                 <Input name="username" type="text" placeholder="Username" onChange={(d) => {
                     this.setState({name: d.target.value})
                 }}/>
+                <Input name="default" type="text" placeholder="Room" onChange={(d) => {
+                    this.setState({room: d.target.value})
+                }}/>
                 <InputGroupAddon addonType="append">
-                    <Button type="button" color="primary" onClick={this.props.registerationSubmit.bind(this, this.state.name)}>Connect</Button>
+                    <Button type="button" color="primary" onClick={this.props.registerationSubmit.bind(this, this.state.name, this.state.room)}>Connect</Button>
                 </InputGroupAddon>
             </InputGroup>
         </div>
@@ -30,7 +34,7 @@ class Registration extends React.Component {
   render() {
     return (!this.state.connected) ? (
         <Jumbotron className="col-12">
-            <h1 className="display-3">Hello, {this.props.name}!</h1>
+            <h1 className="display-3">Hello, {this.props.name}! Selected room: {this.props.room}</h1>
             {this.renderForm()}
         </Jumbotron>
     ) : null;

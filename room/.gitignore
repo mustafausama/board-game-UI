@@ -1,0 +1,5 @@
+#cache
+/__pycache__
+management/__pycache__
+management/commands/__pycache__
+migrations/__pycache__
