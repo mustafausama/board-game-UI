@@ -78,61 +78,6 @@ class ChessItem(Item):
     isWhite = models.BooleanField(verbose_name='isWhite', db_index=True)
     image = models.ImageField(upload_to='uploads/chess/%d/%m/%Y', blank=True, null=True)
 
-    # functional code, but it worked slower
-    # queen and rook works without the logic that they can't go through other figures
-
-    # def can_move(self, cell):
-    #     if self.type == 'King':
-    #         return (cell.chess_item.count() == 0 or
-    #                 cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
-    #                self.cell != cell and \
-    #                abs(cell.x - self.cell.x) < 2 and \
-    #                abs(cell.y - self.cell.y) < 2
-    #
-    #     if self.type == 'Queen':
-    #         return (cell.chess_item.count() == 0 or
-    #                 cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
-    #                self.cell != cell and \
-    #                (abs(cell.x - self.cell.x) == abs(cell.y - self.cell.y) or
-    #                 abs(cell.x - self.cell.x) == 0 or
-    #                 abs(cell.y - self.cell.y) == 0)
-    #
-    #     if self.type == 'Bishop':
-    #         return (cell.chess_item.count() == 0 or
-    #                 cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
-    #                ChessCell.objects \
-    #                    .filter(grid=cell.grid,
-    #                            x__range=(cell.x, self.cell.x),
-    #                            y__range=(cell.y, self.cell.y),
-    #                            x=F('y')) \
-    #                    .exclude(id=cell.id) \
-    #                    .exclude(id=self.cell_id) \
-    #                    .exists() and \
-    #                abs(cell.x - self.cell.x) == abs(cell.y - self.cell.y)
-    #
-    #     if self.type == 'Knight':
-    #         return (cell.chess_item.count() == 0 or
-    #                 cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
-    #                ((abs(cell.x - self.cell.x) == 1 and abs(cell.y - self.cell.y) == 2) or
-    #                 (abs(cell.x - self.cell.x) == 2 and abs(cell.y - self.cell.y) == 1)
-    #                 )
-    #
-    #     if self.type == 'Rook':
-    #         return (cell.chess_item.count() == 0 or
-    #                 cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
-    #                self.cell != cell and \
-    #                (abs(cell.x - self.cell.x) == 0 or
-    #                 abs(cell.y - self.cell.y) == 0)
-    #
-    #     if self.type == 'Pawn':
-    #         right_dir = cell.y - self.cell.y == (1 if self.isWhite else -1)
-    #         if cell.chess_item.exists():
-    #             return cell.chess_item.only('isWhite')[0].isWhite != self.isWhite and \
-    #                    abs(cell.x - self.cell.x) == 1 and \
-    #                    right_dir
-    #         else:
-    #             return cell.x == self.cell.x and right_dir
-
     def move(self, cell):
         cell.chess_item.delete()
         cell.chess_item = self
@@ -343,7 +288,60 @@ class ChessItem(Item):
 
         # shitty code, uses functional style, but it's a lot slower because of many SQL requests
         # return ChessCell.objects.filter(
-        #     id__in=[x.id for x in ChessCell.objects.all().filter(grid=self.cell.grid) if self.can_move(x)])
+        #     id__in=[x.id for x in ChessCell.objects.filter(grid=self.cell.grid) if self.can_move(x)])
+
+    # queen and rook works without the logic that they can't go through other figures
+    # def can_move(self, cell):
+    #     if self.type == 'King':
+    #         return (cell.chess_item.count() == 0 or
+    #                 cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
+    #                self.cell != cell and \
+    #                abs(cell.x - self.cell.x) < 2 and \
+    #                abs(cell.y - self.cell.y) < 2
+    #
+    #     if self.type == 'Queen':
+    #         return (cell.chess_item.count() == 0 or
+    #                 cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
+    #                self.cell != cell and \
+    #                (abs(cell.x - self.cell.x) == abs(cell.y - self.cell.y) or
+    #                 abs(cell.x - self.cell.x) == 0 or
+    #                 abs(cell.y - self.cell.y) == 0)
+    #
+    #     if self.type == 'Bishop':
+    #         return (cell.chess_item.count() == 0 or
+    #                 cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
+    #                ChessCell.objects \
+    #                    .filter(grid=cell.grid,
+    #                            x__range=(cell.x, self.cell.x),
+    #                            y__range=(cell.y, self.cell.y),
+    #                            x=F('y')) \
+    #                    .exclude(id=cell.id) \
+    #                    .exclude(id=self.cell_id) \
+    #                    .exists() and \
+    #                abs(cell.x - self.cell.x) == abs(cell.y - self.cell.y)
+    #
+    #     if self.type == 'Knight':
+    #         return (cell.chess_item.count() == 0 or
+    #                 cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
+    #                ((abs(cell.x - self.cell.x) == 1 and abs(cell.y - self.cell.y) == 2) or
+    #                 (abs(cell.x - self.cell.x) == 2 and abs(cell.y - self.cell.y) == 1)
+    #                 )
+    #
+    #     if self.type == 'Rook':
+    #         return (cell.chess_item.count() == 0 or
+    #                 cell.chess_item.only('isWhite')[0].isWhite != self.isWhite) and \
+    #                self.cell != cell and \
+    #                (abs(cell.x - self.cell.x) == 0 or
+    #                 abs(cell.y - self.cell.y) == 0)
+    #
+    #     if self.type == 'Pawn':
+    #         right_dir = cell.y - self.cell.y == (1 if self.isWhite else -1)
+    #         if cell.chess_item.exists():
+    #             return cell.chess_item.only('isWhite')[0].isWhite != self.isWhite and \
+    #                    abs(cell.x - self.cell.x) == 1 and \
+    #                    right_dir
+    #         else:
+    #             return cell.x == self.cell.x and right_dir
 
     def can_transform(self):
         return self.type == 'Pawn' and (
